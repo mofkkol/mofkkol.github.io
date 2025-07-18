@@ -20,7 +20,10 @@
             overflow-x: hidden;
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="10" y="10" width="4" height="4" fill="%2300ff00"/></svg>'), auto;
             font-size: 16px;
-            font-family: 'VT323', monospace;
+        }
+
+        .character-card, .modal-content, .close-btn {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
         }
 
         .scanlines {
@@ -31,14 +34,14 @@
             height: 100%;
             pointer-events: none;
             z-index: 1000;
-            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.15) 50%);
-            background-size: 100% 3px;
+            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.20) 50%);
+            background-size: 100% 5px;
             animation: scanlines 0.08s linear infinite;
         }
 
         @keyframes scanlines {
             0% { transform: translateY(0); }
-            100% { transform: translateY(3px); }
+            100% { transform: translateY(5px); }
         }
 
         .container {
@@ -88,7 +91,6 @@
         }
 
         .subtitle {
-            font-family: 'VT323', monospace;
             font-size: 1.5rem;
             color: #00cccc;
             margin-bottom: 30px;
@@ -96,7 +98,6 @@
         }
 
         .welcome-text {
-            font-family: 'VT323', monospace;
             font-size: 1.2rem;
             color: #888;
             margin-bottom: 20px;
@@ -104,7 +105,6 @@
         }
 
         .info-text {
-            font-family: 'VT323', monospace;
             font-size: 1.1rem;
             color: #666;
             font-style: normal;
@@ -123,7 +123,7 @@
             border: 3px solid #00ff00;
             border-radius: 0px;
             padding: 20px;
-            cursor: pointer;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -153,7 +153,6 @@
         }
 
         .character-avatar {
-            font-family: 'VT323', monospace;
             width: 80px;
             height: 80px;
             background: linear-gradient(45deg, #00ff00, #00cccc);
@@ -166,6 +165,13 @@
             font-weight: 400;
             color: #000;
             border: 2px solid #333;
+            overflow: hidden;
+        }
+
+        .character-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .character-info {
@@ -174,7 +180,6 @@
         }
 
         .character-name {
-            font-family: 'VT323', monospace;
             font-size: 1.8rem;
             font-weight: 400;
             margin-bottom: 5px;
@@ -183,7 +188,6 @@
         }
 
         .character-role {
-            font-family: 'VT323', monospace;
             font-size: 1.3rem;
             color: #00cccc;
             margin-bottom: 10px;
@@ -191,7 +195,6 @@
         }
 
         .character-description {
-            font-family: 'VT323', monospace;
             font-size: 1.1rem;
             color: #999;
             line-height: 1.4;
@@ -239,13 +242,12 @@
         }
 
         .close-btn {
-            font-family: 'VT323', monospace;
             position: absolute;
             top: 10px;
             right: 15px;
             font-size: 2rem;
             color: #ff0000;
-            cursor: pointer;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%23ff0000"/></svg>'), pointer !important;
             transition: color 0.3s ease;
             font-weight: 400;
         }
@@ -255,7 +257,6 @@
         }
 
         .modal-avatar {
-            font-family: 'VT323', monospace;
             width: 120px;
             height: 120px;
             background: linear-gradient(45deg, #00ff00, #00cccc);
@@ -268,10 +269,16 @@
             font-weight: 400;
             color: #000;
             border: 3px solid #333;
+            overflow: hidden;
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .modal-name {
-            font-family: 'VT323', monospace;
             font-size: 2.5rem;
             font-weight: 400;
             text-align: center;
@@ -281,7 +288,6 @@
         }
 
         .modal-role {
-            font-family: 'VT323', monospace;
             text-align: center;
             font-size: 1.5rem;
             color: #00cccc;
@@ -294,7 +300,6 @@
         }
 
         .modal-section h3 {
-            font-family: 'VT323', monospace;
             color: #00ff00;
             font-size: 1.4rem;
             margin-bottom: 10px;
@@ -302,45 +307,12 @@
             padding-bottom: 5px;
             letter-spacing: 1px;
             font-weight: 400;
-            font-family: 'VT323', monospace;
         }
 
         .modal-section p {
-            font-family: 'VT323', monospace;
             color: #ccc;
             line-height: 1.6;
             font-size: 1.2rem;
-            letter-spacing: 1px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .stat-item {
-            background: rgba(0, 255, 0, 0.1);
-            padding: 15px;
-            border-radius: 0px;
-            text-align: center;
-            border: 2px solid #333;
-        }
-
-        .stat-label {
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            color: #00cccc;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-
-        .stat-value {
-            font-family: 'VT323', monospace;
-            font-size: 1.8rem;
-            font-weight: 400;
-            color: #00ff00;
             letter-spacing: 1px;
         }
 
@@ -359,7 +331,6 @@
 
         @media (max-width: 768px) {
             .main-title {
-                font-family: 'VT323', monospace;
                 font-size: 2.5rem;
             }
             
@@ -369,17 +340,14 @@
             }
             
             .character-name {
-                font-family: 'VT323', monospace;
                 font-size: 1.5rem;
             }
             
             .character-role {
-                font-family: 'VT323', monospace;
                 font-size: 1.1rem;
             }
             
             .character-description {
-                font-family: 'VT323', monospace;
                 font-size: 1rem;
             }
         }
@@ -430,38 +398,46 @@
 
         <div class="characters-grid">
             <div class="character-card" data-character="jake">
-                <div class="character-avatar">Д.Б</div>
+                <div class="character-avatar">
+                    <img src="https://via.placeholder.com/80x80/00ff00/000000?text=JB" alt="Джейк Баркли">
+                </div>
                 <div class="character-info">
                     <div class="character-name">Джейк Баркли</div>
                     <div class="character-role">Главный Герой</div>
-                    <div class="character-description">Краткая сводка по персонажу</div>
+                    <div class="character-description">тут квента</div>
                 </div>
             </div>
 
             <div class="character-card" data-character="alex">
-                <div class="character-avatar">АК</div>
+                <div class="character-avatar">
+                    <img src="https://via.placeholder.com/80x80/00cccc/000000?text=AK" alt="Алекс Картер">
+                </div>
                 <div class="character-info">
                     <div class="character-name">Алекс Картер</div>
                     <div class="character-role">Инженер</div>
-                    <div class="character-description">Краткая сводка по персонажу</div>
+                    <div class="character-description">тут квента</div>
                 </div>
             </div>
 
             <div class="character-card" data-character="maria">
-                <div class="character-avatar">МР</div>
+                <div class="character-avatar">
+                    <img src="https://via.placeholder.com/80x80/ff6600/000000?text=MP" alt="Мария Родригес">
+                </div>
                 <div class="character-info">
                     <div class="character-name">Мария Родригес</div>
                     <div class="character-role">Медик</div>
-                    <div class="character-description">Краткая сводка по персонажу</div>
+                    <div class="character-description">тут квента</div>
                 </div>
             </div>
 
             <div class="character-card" data-character="viktor">
-                <div class="character-avatar">ВН</div>
+                <div class="character-avatar">
+                    <img src="https://via.placeholder.com/80x80/ff0000/000000?text=VN" alt="Виктор Новак">
+                </div>
                 <div class="character-info">
                     <div class="character-name">Виктор Новак</div>
                     <div class="character-role">Безопасность</div>
-                    <div class="character-description">Краткая сводка по персонажу</div>
+                    <div class="character-description">тут квента</div>
                 </div>
             </div>
         </div>
@@ -471,7 +447,9 @@
     <div class="modal" id="modal-jake">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <div class="modal-avatar">JB</div>
+            <div class="modal-avatar">
+                <img src="https://via.placeholder.com/120x120/00ff00/000000?text=JB" alt="Джейк Баркли">
+            </div>
             <h2 class="modal-name">Джейк Баркли</h2>
             <p class="modal-role">Главный Герой</p>
             
@@ -492,29 +470,7 @@
             
             <div class="modal-section">
                 <h3>Сама квента</h3>
-                <p>Джейк Баркли - опытный космический инженер, который оказался в центре галактического конфликта. Его миссия - предотвратить катастрофу, которая может уничтожить целую солнечную систему. Обладает уникальными навыками в области ядерной физики и криптографии.</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Характеристики</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Интеллект</div>
-                        <div class="stat-value">85</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Выносливость</div>
-                        <div class="stat-value">70</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Харизма</div>
-                        <div class="stat-value">75</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Техника</div>
-                        <div class="stat-value">90</div>
-                    </div>
-                </div>
+                <p>тут квента</p>
             </div>
         </div>
     </div>
@@ -522,7 +478,9 @@
     <div class="modal" id="modal-alex">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <div class="modal-avatar">АК</div>
+            <div class="modal-avatar">
+                <img src="https://via.placeholder.com/120x120/00cccc/000000?text=AK" alt="Алекс Картер">
+            </div>
             <h2 class="modal-name">Алекс Картер</h2>
             <p class="modal-role">Инженер</p>
             
@@ -543,29 +501,7 @@
             
             <div class="modal-section">
                 <h3>Сама квента</h3>
-                <p>Алекс - молодой и талантливый инженер, специализирующийся на системах жизнеобеспечения космических станций. Его аналитический ум и способность находить нестандартные решения делают его незаменимым членом команды.</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Характеристики</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Интеллект</div>
-                        <div class="stat-value">80</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Выносливость</div>
-                        <div class="stat-value">65</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Харизма</div>
-                        <div class="stat-value">60</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Техника</div>
-                        <div class="stat-value">95</div>
-                    </div>
-                </div>
+                <p>тут квента</p>
             </div>
         </div>
     </div>
@@ -573,7 +509,9 @@
     <div class="modal" id="modal-maria">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <div class="modal-avatar">МР</div>
+            <div class="modal-avatar">
+                <img src="https://via.placeholder.com/120x120/ff6600/000000?text=MP" alt="Мария Родригес">
+            </div>
             <h2 class="modal-name">Мария Родригес</h2>
             <p class="modal-role">Медик</p>
             
@@ -594,29 +532,7 @@
             
             <div class="modal-section">
                 <h3>Сама квента</h3>
-                <p>Доктор Мария Родригес - опытный космический медик с многолетним стажем. Она не только лечит тела, но и души членов экипажа. Её спокойствие и профессионализм помогают команде справляться с самыми сложными ситуациями.</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Характеристики</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Интеллект</div>
-                        <div class="stat-value">90</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Выносливость</div>
-                        <div class="stat-value">75</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Харизма</div>
-                        <div class="stat-value">85</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Медицина</div>
-                        <div class="stat-value">95</div>
-                    </div>
-                </div>
+                <p>тут квента</p>
             </div>
         </div>
     </div>
@@ -624,7 +540,9 @@
     <div class="modal" id="modal-viktor">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <div class="modal-avatar">ВН</div>
+            <div class="modal-avatar">
+                <img src="https://via.placeholder.com/120x120/ff0000/000000?text=VN" alt="Виктор Новак">
+            </div>
             <h2 class="modal-name">Виктор Новак</h2>
             <p class="modal-role">Безопасность</p>
             
@@ -645,29 +563,7 @@
             
             <div class="modal-section">
                 <h3>Сама квента</h3>
-                <p>Виктор - бывший военный, ныне начальник службы безопасности. Его суровый вид скрывает доброе сердце и абсолютную преданность команде. Он готов пожертвовать собой ради безопасности других.</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Характеристики</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Интеллект</div>
-                        <div class="stat-value">70</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Выносливость</div>
-                        <div class="stat-value">90</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Харизма</div>
-                        <div class="stat-value">65</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Боевые навыки</div>
-                        <div class="stat-value">95</div>
-                    </div>
-                </div>
+                <p>тут квента</p>
             </div>
         </div>
     </div>
