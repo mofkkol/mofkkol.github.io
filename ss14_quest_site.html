@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS14 Квесты - Джейк Баркли</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="10" y="10" width="4" height="4" fill="%2300ff00"/></svg>'), auto;
+            font-size: 16px;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.15) 50%);
+            background-size: 100% 3px;
+            animation: scanlines 0.08s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(3px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: flicker 3s infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+            75% { opacity: 0.9; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #00cccc;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .info-text {
+            font-size: 1.1rem;
+            color: #666;
+            font-style: normal;
+            letter-spacing: 1px;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, #111111, #222222);
+            border: 3px solid #00ff00;
+            border-radius: 0px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.2) 0%, transparent 70%);
+            transition: all 0.3s ease;
+            transform: scale(0);
+        }
+
+        .character-card:hover::before {
+            transform: scale(1);
+        }
+
+        .character-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 0, 0.4), inset 0 0 20px rgba(0, 255, 0, 0.2);
+            border-color: #00cccc;
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #00ff00, #00cccc);
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #000;
+            border: 2px solid #333;
+        }
+
+        .character-info {
+            position: relative;
+            z-index: 2;
+        }
+
+        .character-name {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 5px;
+            color: #00ff00;
+            letter-spacing: 1px;
+        }
+
+        .character-role {
+            font-size: 1.3rem;
+            color: #00cccc;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .character-description {
+            font-size: 1.1rem;
+            color: #999;
+            line-height: 1.4;
+            letter-spacing: 1px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #111111, #222222);
+            border: 4px solid #00ff00;
+            border-radius: 0px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+            box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2rem;
+            color: #ff0000;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            font-weight: 400;
+        }
+
+        .close-btn:hover {
+            color: #ff6666;
+        }
+
+        .modal-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #00ff00, #00cccc);
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #000;
+            border: 3px solid #333;
+        }
+
+        .modal-name {
+            font-size: 2.5rem;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #00ff00;
+            letter-spacing: 2px;
+        }
+
+        .modal-role {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #00cccc;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h3 {
+            color: #00ff00;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .modal-section p {
+            color: #ccc;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 15px;
+            border-radius: 0px;
+            text-align: center;
+            border: 2px solid #333;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #00cccc;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #00ff00;
+            letter-spacing: 1px;
+        }
+
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            .character-name {
+                font-size: 1.5rem;
+            }
+            
+            .character-role {
+                font-size: 1.1rem;
+            }
+            
+            .character-description {
+                font-size: 1rem;
+            }
+        }
+
+        /* Добавляем эффект старого монитора */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Эффект мерцания для всего экрана */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.02);
+            pointer-events: none;
+            z-index: 998;
+            animation: screenFlicker 0.15s infinite linear alternate;
+        }
+
+        @keyframes screenFlicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title glitch">OBJECTIVE:</h1>
+            <p class="subtitle">NUCLEAR LAUNCH AUTHENTICATOR</p>
+            <p class="welcome-text">Добро пожаловать, Джейк Баркли</p>
+            <p class="info-text">Тут можно всякую инфу накидать</p>
+        </div>
+
+        <div class="characters-grid">
+            <div class="character-card" data-character="jake">
+                <div class="character-avatar">JB</div>
+                <div class="character-info">
+                    <div class="character-name">Джейк Баркли</div>
+                    <div class="character-role">Главный Герой</div>
+                    <div class="character-description">Краткая сводка по персонажу</div>
+                </div>
+            </div>
+
+            <div class="character-card" data-character="alex">
+                <div class="character-avatar">АК</div>
+                <div class="character-info">
+                    <div class="character-name">Алекс Картер</div>
+                    <div class="character-role">Инженер</div>
+                    <div class="character-description">Краткая сводка по персонажу</div>
+                </div>
+            </div>
+
+            <div class="character-card" data-character="maria">
+                <div class="character-avatar">МР</div>
+                <div class="character-info">
+                    <div class="character-name">Мария Родригес</div>
+                    <div class="character-role">Медик</div>
+                    <div class="character-description">Краткая сводка по персонажу</div>
+                </div>
+            </div>
+
+            <div class="character-card" data-character="viktor">
+                <div class="character-avatar">ВН</div>
+                <div class="character-info">
+                    <div class="character-name">Виктор Новак</div>
+                    <div class="character-role">Безопасность</div>
+                    <div class="character-description">Краткая сводка по персонажу</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="modal-jake">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-avatar">JB</div>
+            <h2 class="modal-name">Джейк Баркли</h2>
+            <p class="modal-role">Главный Герой</p>
+            
+            <div class="modal-section">
+                <h3>Возраст</h3>
+                <p>32 года</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Раса</h3>
+                <p>Человек</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Пол</h3>
+                <p>Мужской</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Сама квента</h3>
+                <p>Джейк Баркли - опытный космический инженер, который оказался в центре галактического конфликта. Его миссия - предотвратить катастрофу, которая может уничтожить целую солнечную систему. Обладает уникальными навыками в области ядерной физики и криптографии.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Характеристики</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Интеллект</div>
+                        <div class="stat-value">85</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Выносливость</div>
+                        <div class="stat-value">70</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Харизма</div>
+                        <div class="stat-value">75</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Техника</div>
+                        <div class="stat-value">90</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-alex">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-avatar">АК</div>
+            <h2 class="modal-name">Алекс Картер</h2>
+            <p class="modal-role">Инженер</p>
+            
+            <div class="modal-section">
+                <h3>Возраст</h3>
+                <p>28 лет</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Раса</h3>
+                <p>Человек</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Пол</h3>
+                <p>Мужской</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Сама квента</h3>
+                <p>Алекс - молодой и талантливый инженер, специализирующийся на системах жизнеобеспечения космических станций. Его аналитический ум и способность находить нестандартные решения делают его незаменимым членом команды.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Характеристики</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Интеллект</div>
+                        <div class="stat-value">80</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Выносливость</div>
+                        <div class="stat-value">65</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Харизма</div>
+                        <div class="stat-value">60</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Техника</div>
+                        <div class="stat-value">95</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-maria">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-avatar">МР</div>
+            <h2 class="modal-name">Мария Родригес</h2>
+            <p class="modal-role">Медик</p>
+            
+            <div class="modal-section">
+                <h3>Возраст</h3>
+                <p>35 лет</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Раса</h3>
+                <p>Человек</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Пол</h3>
+                <p>Женский</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Сама квента</h3>
+                <p>Доктор Мария Родригес - опытный космический медик с многолетним стажем. Она не только лечит тела, но и души членов экипажа. Её спокойствие и профессионализм помогают команде справляться с самыми сложными ситуациями.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Характеристики</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Интеллект</div>
+                        <div class="stat-value">90</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Выносливость</div>
+                        <div class="stat-value">75</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Харизма</div>
+                        <div class="stat-value">85</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Медицина</div>
+                        <div class="stat-value">95</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-viktor">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-avatar">ВН</div>
+            <h2 class="modal-name">Виктор Новак</h2>
+            <p class="modal-role">Безопасность</p>
+            
+            <div class="modal-section">
+                <h3>Возраст</h3>
+                <p>41 год</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Раса</h3>
+                <p>Человек</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Пол</h3>
+                <p>Мужской</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Сама квента</h3>
+                <p>Виктор - бывший военный, ныне начальник службы безопасности. Его суровый вид скрывает доброе сердце и абсолютную преданность команде. Он готов пожертвовать собой ради безопасности других.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Характеристики</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Интеллект</div>
+                        <div class="stat-value">70</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Выносливость</div>
+                        <div class="stat-value">90</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Харизма</div>
+                        <div class="stat-value">65</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Боевые навыки</div>
+                        <div class="stat-value">95</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Получаем все карточки персонажей
+        const characterCards = document.querySelectorAll('.character-card');
+        const modals = document.querySelectorAll('.modal');
+        const closeBtns = document.querySelectorAll('.close-btn');
+
+        // Добавляем обработчики событий для карточек
+        characterCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const character = card.dataset.character;
+                const modal = document.getElementById(`modal-${character}`);
+                modal.classList.add('active');
+                
+                // Добавляем звуковой эффект (опционально)
+                playClickSound();
+            });
+        });
+
+        // Добавляем обработчики для кнопок закрытия
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const modal = btn.closest('.modal');
+                modal.classList.remove('active');
+            });
+        });
+
+        // Закрытие модального окна по клику на фон
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Закрытие модального окна по нажатию Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modals.forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Звуковой эффект (опционально)
+        function playClickSound() {
+            // Создаем простой звуковой эффект
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Добавляем эффект печатной машинки для заголовка
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+
+        // Запускаем эффект печатной машинки при загрузке
+        window.addEventListener('load', () => {
+            const title = document.querySelector('.main-title');
+            const originalText = title.textContent;
+            typeWriter(title, originalText);
+        });
+
+        // Добавляем эффект мерцания для элементов
+        function addGlitchEffect() {
+            const elements = document.querySelectorAll('.character-card, .modal-content');
+            elements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    element.style.animation = 'glitch 0.3s ease-in-out';
+                });
+                
+                element.addEventListener('animationend', () => {
+                    element.style.animation = '';
+                });
+            });
+        }
+
+        addGlitchEffect();
+    </script>
+</body>
+</html>
