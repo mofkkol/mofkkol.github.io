@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ричард Баркли — Архив NanoTrasen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Press Start 2P", system-ui;
+            background: #000;
+            color: #00ff00;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="10" y="10" width="4" height="4" fill="%2300ff00"/></svg>'), auto;
+            font-size: 16px;
+            min-height: 100vh;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVQYGWPY//8/Ay7w6NEjhrVr16LNwYVxKcKlCJciXIpwKaIPFWEoLy+Px44dSy4qKmKYMGECulNxKcKlCJciAP5/X7ljDdf8AAAAAElFTkSuQmCC');
+            background-repeat: repeat;
+            transition: all 0.3s ease;
+        }
+
+        body.simple-mode {
+            background: #000;
+            background-image: none;
+        }
+
+        .crt-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            z-index: 1000;
+            border-radius: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        body.simple-mode .crt-frame {
+            opacity: 0;
+        }
+
+        .screen-flicker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.02);
+            pointer-events: none;
+            z-index: 998;
+            animation: screenFlicker 0.15s infinite linear alternate;
+            transition: opacity 0.3s ease;
+        }
+
+        body.simple-mode .screen-flicker {
+            opacity: 0;
+        }
+
+        @keyframes screenFlicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            z-index: 997;
+            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.30) 50%);
+            background-size: 100% 8px;
+            animation: scanlines 0.40s linear infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        body.simple-mode .scanlines {
+            opacity: 0;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(8px); }
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.9), rgba(34, 34, 34, 0.9));
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 12px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.6rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 1px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 204, 204, 0.1));
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 204, 204, 0.2));
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .logo {
+            color: #00cccc;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: flicker 3s infinite;
+            letter-spacing: 1px;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+            75% { opacity: 0.9; }
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.9), rgba(34, 34, 34, 0.9));
+            border: 3px solid #00ff00;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .employee-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .photo-section {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(45deg, #00ff00, #00cccc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #000;
+            border: 2px solid #333;
+        }
+
+        .photo-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-section h2 {
+            color: #00cccc;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .info-line {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            width: 150px;
+            color: #00ff00;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #ccc;
+        }
+
+        .description {
+            margin-top: 30px;
+        }
+
+        .description h3 {
+            color: #00cccc;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .description p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .back-btn, .secret-btn {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.9), rgba(34, 34, 34, 0.9));
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 30px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.8rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .back-btn:hover, .secret-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 204, 204, 0.1));
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .secret-btn {
+            border-color: #ff6600;
+            color: #ff6600;
+        }
+
+        .secret-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.1), rgba(255, 0, 0, 0.1));
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+        }
+
+        .secret-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .secret-overlay.show {
+            display: flex;
+        }
+
+        .secret-window {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(34, 34, 34, 0.95));
+            border: 3px solid #ff0000;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            animation: glitchIn 0.5s ease-out;
+        }
+
+        .clickable-link {
+            color: #00cccc;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+            border-bottom: 1px dotted #00cccc;
+        }
+
+        .clickable-link:hover {
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            border-bottom-color: #00ff00;
+            animation: pulse 1s infinite;
+        }
+
+        .university-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .university-overlay.show {
+            display: flex;
+        }
+
+        .university-window {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(34, 34, 34, 0.95));
+            border: 3px solid #00cccc;
+            padding: 30px;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 160vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 204, 204, 0.5);
+            animation: glitchIn 0.5s ease-out;
+            text-align: center;
+        }
+
+        .university-img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border: 2px solid #00cccc;
+            box-shadow: 0 0 20px rgba(0, 204, 204, 0.3);
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .university-window .close-btn {
+            background: #00cccc;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.7rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .university-window .close-btn:hover {
+            background: #66ffff;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 204, 204, 0.5);
+        }
+
+        @keyframes glitchIn {
+            0% {
+                transform: scale(0.8) translate(-20px, 20px);
+                opacity: 0;
+                filter: blur(5px);
+            }
+            50% {
+                transform: scale(1.05) translate(10px, -10px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1) translate(0, 0);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .secret-header {
+            color: #ff0000;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 10px;
+            animation: flicker 2s infinite;
+        }
+
+        .secret-content {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #ff9999;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: #ff0000;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.7rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .close-btn:hover {
+            background: #ff6666;
+            transform: scale(1.1);
+        }
+
+        .classified {
+            color: #ff0000;
+            font-weight: bold;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .employee-info {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .photo-section {
+                width: 100px;
+                height: 120px;
+                margin: 0 auto;
+            }
+            
+            .info-line {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: auto;
+                margin-bottom: 5px;
+            }
+
+            .controls {
+                top: 10px;
+                right: 10px;
+                gap: 5px;
+            }
+
+            .control-btn {
+                font-size: 0.5rem;
+                padding: 6px 8px;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT Effects -->
+    <div class="crt-frame"></div>
+    <div class="screen-flicker"></div>
+    <div class="scanlines"></div>
+
+    <!-- Control buttons -->
+    <div class="controls">
+        <button class="control-btn" id="audioBtn" onclick="toggleAudio()">🔊 ЗВУК: ВКЛ</button>
+        <button class="control-btn" id="effectsBtn" onclick="toggleEffects()">📺 ЭФФЕКТЫ: ВКЛ</button>
+    </div>
+
+    <!-- Hidden audio element -->
+    <audio id="backgroundAudio" loop preload="auto">
+        <source src="../sounds/ambient.mp3" type="audio/mpeg">
+        <source src="../sounds/ambient.ogg" type="audio/ogg">
+        <source src="../sounds/ambient.wav" type="audio/wav">
+        <!-- Добавьте путь к вашему звуковому файлу -->
+    </audio>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">NANOTRASEN CORPORATION</div>
+            <h1 class="title">ДОСЬЕ СОТРУДНИКА</h1>
+            <p class="subtitle">УРОВЕНЬ ДОСТУПА: ОГРАНИЧЕННЫЙ</p>
+        </div>
+
+        <div class="content">
+            <div class="employee-info">
+                <div class="photo-section">
+                    <img src="../images/ocs/richard-barkli.png" alt="Ричард Баркли" onerror="this.style.display='none'; this.parentNode.innerHTML='RB';">
+                </div>
+                <div class="info-section">
+                    <h2>ОСНОВНАЯ ИНФОРМАЦИЯ</h2>
+                    <div class="info-line">
+                        <span class="info-label">ФИО:</span>
+                        <span class="info-value">Ричард Баркли</span>
+                    </div>
+                    <div class="info-line">
+                        <span class="info-label">Вид:</span>
+                        <span class="info-value">Человек</span>
+                    </div>
+                    <div class="info-line">
+                        <span class="info-label">Дата рождения:</span>
+                        <span class="info-value">03.05.2802</span>
+                    </div>
+                    <div class="info-line">
+                        <span class="info-label">Отдел:</span>
+                        <span class="info-value">Научно-исследовательский</span>
+                    </div>
+                    <div class="info-line">
+                        <span class="info-label">Должность:</span>
+                        <span class="info-value">Аномалист</span>
+                    </div>
+                    <div class="info-line">
+                        <span class="info-label">Статус:</span>
+                        <span class="info-value">АКТИВЕН</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="description">
+                <h3>СЛУЖЕБНАЯ ХАРАКТЕРИСТИКА</h3>
+                <p>Сотрудник зарекомендовал себя как человек, склонный к помощи экипажу, младшим по званию. Пользуется авторитетом среди экипажа и может выполнять задачи, требующие координации между коллегами.</p>
+                <p>Проявляет особый интерес к изучению аномальных объектов.</p>
+                <p>Рекомендуется для продолжения работы на текущей должности, а также возможности получения КПК ведущего учёного.</p>
+            </div>
+            <div class="description">
+                <h3>БИОГРАФИЯ</h3>
+                <p>Ричард Баркли родился в семье среднего класса в городе Дефорд на планете и одноименной системе Helion (далее Гелион), принадлежащей Объединённому Правительству Земли. До поступления в <span class="clickable-link" onclick="showUniversityImage()">Земной государственный университет</span> имел проблемы с социализацией, однако практически полное отсутствие общения со сверстниками помогло Ричарду более глубже окунуться в мир, полный научных журналов, книг и рассказов. </p>
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+
+        <div>
+            <a href="../index.html" class="back-btn">← НАЗАД К АРХИВУ</a>
+            <button class="secret-btn" onclick="showSecret()">РАСШИРЕННЫЙ ДОСТУП</button>
+        </div>
+    </div>
+
+    <!-- Secret overlay -->
+    <div class="secret-overlay" id="secretOverlay">
+        <div class="secret-window">
+            <h2 class="secret-header">⚠ <span class="classified">СЕКРЕТНО</span> ⚠</h2>
+            <div class="secret-content">
+                <p><strong>ВНИМАНИЕ:</strong> Доступ к данной информации может быть получен только Главой Службы Безопасности или лицам, старшим по званию.</p>
+                <p><strong>ДИСЦИПЛИНАРНЫЕ НАРУШЕНИЯ:</strong></p>
+                <p>• Неоднократные случаи проведения неавторизованных экспериментов в нерабочее время</p>
+                <p>• Подозрение в краже реагентов из аномалистической лаборатории для личных целей</p>
+                <p>• Обнаружен спящим на рабочем месте в 25% проверок</p>
+                <p><strong>ЗАМЕЧАНИЯ:</strong> Сотрудник был замечен в разговорах с личностями, которые имели связь с террористическими организациями. Рекомендуется частый досмотр личных вещей.</p>
+            </div>
+            <button class="close-btn" onclick="hideSecret()">ЗАКРЫТЬ ФАЙЛ</button>
+        </div>
+    </div>
+
+    <!-- University -->
+    <div class="university-overlay" id="universityOverlay">
+        <div class="university-window">
+            <img src="../images/ocs/docs/Richard/университет.png" alt="Земной государственный университет" class="university-img">
+            <button class="close-btn" onclick="hideUniversityImage()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        let audioEnabled = false;
+        let effectsEnabled = true;
+        const audio = document.getElementById('backgroundAudio');
+        
+        // Initialize audio
+        function initAudio() {
+            audio.volume = 0.5; // Установить громкость 30%
+        }
+
+        function toggleAudio() {
+            const btn = document.getElementById('audioBtn');
+            
+            if (audioEnabled) {
+                audio.pause();
+                audioEnabled = false;
+                btn.textContent = '🔇 ЗВУК: ВЫКЛ';
+                btn.classList.remove('active');
+            } else {
+                // Попытка воспроизведения с обработкой ошибок
+                audio.play().then(() => {
+                    audioEnabled = true;
+                    btn.textContent = '🔊 ЗВУК: ВКЛ';
+                    btn.classList.add('active');
+                }).catch(error => {
+                    console.log('Ошибка воспроизведения аудио:', error);
+                    alert('Не удалось загрузить звуковой файл. Простите!');
+                });
+            }
+        }
+
+        function toggleEffects() {
+            const btn = document.getElementById('effectsBtn');
+            const body = document.body;
+            
+            if (effectsEnabled) {
+                body.classList.add('simple-mode');
+                effectsEnabled = false;
+                btn.textContent = '📺 ЭФФЕКТЫ: ВЫКЛ';
+                btn.classList.remove('active');
+            } else {
+                body.classList.remove('simple-mode');
+                effectsEnabled = true;
+                btn.textContent = '📺 ЭФФЕКТЫ: ВКЛ';
+                btn.classList.add('active');
+            }
+        }
+
+        function showSecret() {
+            document.getElementById('secretOverlay').classList.add('show');
+            playGlitchSound();
+        }
+
+        function hideSecret() {
+            document.getElementById('secretOverlay').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideSecret();
+                hideUniversityImage();
+            }
+        });
+
+        // Close on overlay click
+        document.getElementById('secretOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'secretOverlay') {
+                hideSecret();
+            }
+        });
+
+        document.getElementById('universityOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'universityOverlay') {
+            hideUniversityImage();
+            }
+        });
+
+        function showUniversityImage() {
+            document.getElementById('universityOverlay').classList.add('show');
+            playGlitchSound();
+        }
+
+        function hideUniversityImage() {
+            document.getElementById('universityOverlay').classList.remove('show');
+        }
+
+        // Sound effect for secret access
+        function playGlitchSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 220;
+                oscillator.type = 'sawtooth';
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log('Audio context not available:', e);
+            }
+        }
+
+        // Random screen glitches (только когда эффекты включены)
+        setInterval(() => {
+            if (effectsEnabled && Math.random() < 0.05) {
+                document.body.style.animation = 'glitch 0.1s ease-in-out';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 100);
+            }
+        }, 5000);
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initAudio();
+            // Установить начальное состояние кнопок
+            document.getElementById('effectsBtn').classList.add('active');
+        });
+
+        // Prevent right-click for immersion
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Handle audio loading errors
+        audio.addEventListener('error', () => {
+            console.log('Ошибка загрузки аудио файла');
+        });
+
+        // Autoplay policy handling
+        document.addEventListener('click', () => {
+            if (audioEnabled && audio.paused) {
+                audio.play().catch(e => console.log('Autoplay prevented:', e));
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>

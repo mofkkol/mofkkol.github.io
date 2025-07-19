@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS14 Квесты - Джейк Баркли</title>
+    <title>Квенты — mofkkol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -14,15 +15,220 @@
         }
 
         body {
-            font-family: 'VT323', monospace;
-            background: #0a0a0a;
+            font-family: "Press Start 2P", system-ui;
+            background: #000;
             color: #00ff00;
             overflow-x: hidden;
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="10" y="10" width="4" height="4" fill="%2300ff00"/></svg>'), auto;
             font-size: 16px;
+            height: 100vh;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVQYGWPY//8/Ay7w6NEjhrVr16LNwYVxKcKlCJciXIpwKaIPFWEoLy+Px44dSy4qKmKYMGECulNxKcKlCJciAP5/X7ljDff8AAAAAElFTkSuQmCC');
+            background-repeat: repeat;
         }
 
-        .character-card, .modal-content, .close-btn {
+        /* Buzz Effect Styles */
+        .buzz-text {
+            position: relative;
+            -webkit-filter: blur(0.3px);
+            filter: blur(0.3px);
+        }
+
+        .buzz-text::before,
+        .buzz-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .buzz-text::before {
+            -webkit-animation: buzz-before 200ms infinite linear alternate-reverse;
+            animation: buzz-before 200ms infinite linear alternate-reverse;
+            color: #ff0000;
+            z-index: -1;
+        }
+
+        .buzz-text::after {
+            -webkit-animation: buzz-after 200ms infinite linear alternate-reverse;
+            animation: buzz-after 200ms infinite linear alternate-reverse;
+            color: #0000ff;
+            z-index: -2;
+        }
+
+        @keyframes buzz-before {
+            0% {
+                transform: translate(1px, 1px);
+                filter: blur(1px) brightness(150%);
+            }
+            100% {
+                transform: translate(-1px, -1px);
+                filter: blur(0px) brightness(100%);
+            }
+        }
+
+        @keyframes buzz-after {
+            0% {
+                transform: translate(-1px, -1px);
+                filter: blur(0px) brightness(120%);
+            }
+            100% {
+                transform: translate(1px, 1px);
+                filter: blur(1px) brightness(80%);
+            }
+        }
+
+        /* Background images for zoom effect */
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            z-index: -10;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1);
+            filter: blur(2px) brightness(0.3);
+        }
+
+        .background-image.active {
+            opacity: 1;
+            transform: scale(1.1);
+            filter: blur(0px) brightness(0.6);
+        }
+
+        #bg-richard {
+            background-image: url('');
+        }
+
+        #bg-alex {
+            background-image: url('');
+        }
+
+        #bg-maria {
+            background-image: url('');
+        }
+
+        /* CRT Monitor Frame */
+        .crt-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            z-index: 1000;
+            border-radius: 20px;
+        }
+
+        /* SVG Filter for CRT distortion */
+        .crt-distortion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Startup overlay */
+        .startup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .startup-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .startup-text {
+            color: #00ff00;
+            font-size: 2rem;
+            text-align: center;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* CRT Turn On Animation */
+        .crt-content {
+            transform: scaleY(0);
+            animation: none;
+        }
+
+        .crt-content.turning-on {
+            animation: crtTurnOn 2s ease-out forwards;
+        }
+
+        @keyframes crtTurnOn {
+            0% {
+                transform: scaleY(0) scaleX(0.8);
+                filter: brightness(3) contrast(2);
+            }
+            30% {
+                transform: scaleY(0.1) scaleX(0.9);
+                filter: brightness(2.5) contrast(1.8);
+            }
+            60% {
+                transform: scaleY(0.8) scaleX(1);
+                filter: brightness(1.5) contrast(1.3);
+            }
+            80% {
+                transform: scaleY(1.05) scaleX(1);
+                filter: brightness(1.2) contrast(1.1);
+            }
+            100% {
+                transform: scaleY(1) scaleX(1);
+                filter: brightness(1) contrast(1);
+            }
+        }
+
+        /* Screen flickering effect */
+        .screen-flicker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.02);
+            pointer-events: none;
+            z-index: 998;
+            animation: screenFlicker 0.15s infinite linear alternate;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .screen-flicker.active {
+            opacity: 1;
+        }
+
+        @keyframes screenFlicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        .character-card, .close-btn {
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
         }
 
@@ -33,15 +239,21 @@
             width: 200%;
             height: 200%;
             pointer-events: none;
-            z-index: 1000;
-            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.20) 50%);
-            background-size: 100% 5px;
-            animation: scanlines 0.16s linear infinite;
+            z-index: 997;
+            background: linear-gradient(transparent 30%, rgba(0, 255, 0, 0.30) 50%);
+            background-size: 100% 10px;
+            animation: scanlines 0.3s linear infinite;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .scanlines.active {
+            opacity: 1;
         }
 
         @keyframes scanlines {
             0% { transform: translateY(0); }
-            100% { transform: translateY(5px); }
+            100% { transform: translateY(8px); }
         }
 
         .container {
@@ -49,6 +261,10 @@
             margin: 0 auto;
             padding: 40px 20px;
             position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
         }
 
         .header {
@@ -75,7 +291,7 @@
         }
 
         .main-title {
-            font-family: 'VT323', monospace;
+            font-family: "Press Start 2P", system-ui;
             font-size: 4rem;
             font-weight: 400;
             margin-bottom: 10px;
@@ -113,21 +329,27 @@
 
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Уменьшили с 300px до 250px */
+            gap: 25px; /* Уменьшили с 30px до 25px */
             margin-top: 40px;
+            flex-grow: 1;
         }
 
         .character-card {
-            background: linear-gradient(135deg, #111111, #222222);
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.9), rgba(34, 34, 34, 0.9));
             border: 3px solid #00ff00;
             border-radius: 0px;
-            padding: 20px;
+            padding: 15px; /* Уменьшили с 20px до 15px */
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Уменьшили с 20px до 15px */
+            backdrop-filter: blur(10px);
+            max-height: 120px; /* Ограничили высоту карточек */
         }
 
         .character-card::before {
@@ -150,22 +372,24 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 255, 0, 0.4), inset 0 0 20px rgba(0, 255, 0, 0.2);
             border-color: #00cccc;
+            animation: glitch 0.1s ease-in-out;
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(34, 34, 34, 0.95));
         }
 
         .character-avatar {
-            width: 80px;
-            height: 80px;
+            width: 60px; /* Уменьшили с 80px до 60px */
+            height: 60px; /* Уменьшили с 80px до 60px */
             background: linear-gradient(45deg, #00ff00, #00cccc);
             border-radius: 0px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            font-size: 2.5rem;
+            font-size: 2rem; /* Уменьшили с 2.5rem до 2rem */
             font-weight: 400;
             color: #000;
             border: 2px solid #333;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .character-avatar img {
@@ -177,10 +401,11 @@
         .character-info {
             position: relative;
             z-index: 2;
+            flex-grow: 1;
         }
 
         .character-name {
-            font-size: 1.8rem;
+            font-size: 1.4rem; /* Уменьшили с 1.8rem до 1.4rem */
             font-weight: 400;
             margin-bottom: 5px;
             color: #00ff00;
@@ -188,131 +413,16 @@
         }
 
         .character-role {
-            font-size: 1.3rem;
+            font-size: 1.1rem; /* Уменьшили с 1.3rem до 1.1rem */
             color: #00cccc;
-            margin-bottom: 10px;
+            margin-bottom: 8px; /* Уменьшили с 10px до 8px */
             letter-spacing: 1px;
         }
 
         .character-description {
-            font-size: 1.1rem;
+            font-size: 0.9rem; /* Уменьшили с 1.1rem до 0.9rem */
             color: #999;
             line-height: 1.4;
-            letter-spacing: 1px;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #111111, #222222);
-            border: 4px solid #00ff00;
-            border-radius: 0px;
-            padding: 40px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            transform: scale(0.7);
-            transition: transform 0.3s ease;
-            box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2rem;
-            color: #ff0000;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%23ff0000"/></svg>'), pointer !important;
-            transition: color 0.3s ease;
-            font-weight: 400;
-        }
-
-        .close-btn:hover {
-            color: #ff6666;
-        }
-
-        .modal-avatar {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(45deg, #00ff00, #00cccc);
-            border-radius: 0px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 3.5rem;
-            font-weight: 400;
-            color: #000;
-            border: 3px solid #333;
-            overflow: hidden;
-        }
-
-        .modal-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .modal-name {
-            font-size: 2.5rem;
-            font-weight: 400;
-            text-align: center;
-            margin-bottom: 10px;
-            color: #00ff00;
-            letter-spacing: 2px;
-        }
-
-        .modal-role {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #00cccc;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
-        }
-
-        .modal-section {
-            margin-bottom: 25px;
-        }
-
-        .modal-section h3 {
-            color: #00ff00;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 5px;
-            letter-spacing: 1px;
-            font-weight: 400;
-        }
-
-        .modal-section p {
-            color: #ccc;
-            line-height: 1.6;
-            font-size: 1.2rem;
             letter-spacing: 1px;
         }
 
@@ -334,343 +444,329 @@
                 font-size: 2.5rem;
             }
             
-            .modal-content {
-                padding: 20px;
-                margin: 20px;
-            }
-            
             .character-name {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
             }
             
             .character-role {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .character-description {
-                font-size: 1rem;
+                font-size: 0.8rem;
+            }
+
+            .character-card {
+                flex-direction: column;
+                text-align: center;
+                max-height: none;
+            }
+
+            .characters-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Добавляем эффект старого монитора */
-        body::before {
-            content: '';
+        /* Click to start overlay */
+        .click-to-start {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
-            pointer-events: none;
-            z-index: 999;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            cursor: pointer;
         }
 
-        /* Эффект мерцания для всего экрана */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 255, 0, 0.02);
-            pointer-events: none;
-            z-index: 998;
-            animation: screenFlicker 0.15s infinite linear alternate;
+        .click-text {
+            color: #00ff00;
+            font-size: 1.5rem;
+            text-align: center;
+            animation: blink 2s infinite;
         }
 
-        @keyframes screenFlicker {
-            0% { opacity: 1; }
-            100% { opacity: 0.97; }
+        .click-to-start.hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
-    
-    <div class="container">
-        <div class="header">
-            <h1 class="main-title glitch">OBJECTIVE:</h1>
-            <p class="subtitle">NUCLEAR LAUNCH AUTHENTICATOR</p>
-            <p class="welcome-text">Добро пожаловать, Джейк Баркли</p>
-            <p class="info-text">Тут можно всякую инфу накидать</p>
-        </div>
+    <!-- Background Images for Zoom Effect -->
+    <div id="bg-richard" class="background-image"></div>
+    <div id="bg-alex" class="background-image"></div>
+    <div id="bg-maria" class="background-image"></div>
 
-        <div class="characters-grid">
-            <div class="character-card" data-character="jake">
-                <div class="character-avatar">
-                    <img src="https://via.placeholder.com/80x80/00ff00/000000?text=JB" alt="Джейк Баркли">
-                </div>
-                <div class="character-info">
-                    <div class="character-name">Джейк Баркли</div>
-                    <div class="character-role">Главный Герой</div>
-                    <div class="character-description">тут квента</div>
-                </div>
-            </div>
-
-            <div class="character-card" data-character="alex">
-                <div class="character-avatar">
-                    <img src="https://via.placeholder.com/80x80/00cccc/000000?text=AK" alt="Алекс Картер">
-                </div>
-                <div class="character-info">
-                    <div class="character-name">Алекс Картер</div>
-                    <div class="character-role">Инженер</div>
-                    <div class="character-description">тут квента</div>
-                </div>
-            </div>
-
-            <div class="character-card" data-character="maria">
-                <div class="character-avatar">
-                    <img src="https://via.placeholder.com/80x80/ff6600/000000?text=MP" alt="Мария Родригес">
-                </div>
-                <div class="character-info">
-                    <div class="character-name">Мария Родригес</div>
-                    <div class="character-role">Медик</div>
-                    <div class="character-description">тут квента</div>
-                </div>
-            </div>
-
-            <div class="character-card" data-character="viktor">
-                <div class="character-avatar">
-                    <img src="https://via.placeholder.com/80x80/ff0000/000000?text=VN" alt="Виктор Новак">
-                </div>
-                <div class="character-info">
-                    <div class="character-name">Виктор Новак</div>
-                    <div class="character-role">Безопасность</div>
-                    <div class="character-description">тут квента</div>
-                </div>
-            </div>
-        </div>
+    <!-- Click to start overlay -->
+    <div class="click-to-start" id="clickToStart">
+        <div class="click-text">НАЖМИТЕ ЛЮБУЮ КЛАВИШУ ДЛЯ ЗАПУСКА СИСТЕМЫ</div>
     </div>
 
-    <!-- Модальные окна -->
-    <div class="modal" id="modal-jake">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-avatar">
-                <img src="https://via.placeholder.com/120x120/00ff00/000000?text=JB" alt="Джейк Баркли">
-            </div>
-            <h2 class="modal-name">Джейк Баркли</h2>
-            <p class="modal-role">Главный Герой</p>
-            
-            <div class="modal-section">
-                <h3>Возраст</h3>
-                <p>32 года</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Раса</h3>
-                <p>Человек</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Пол</h3>
-                <p>Мужской</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Сама квента</h3>
-                <p>тут квента</p>
-            </div>
-        </div>
+    <!-- Startup overlay -->
+    <div class="startup-overlay" id="startupOverlay">
+        <div class="startup-text">ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ...</div>
     </div>
 
-    <div class="modal" id="modal-alex">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-avatar">
-                <img src="https://via.placeholder.com/120x120/00cccc/000000?text=AK" alt="Алекс Картер">
-            </div>
-            <h2 class="modal-name">Алекс Картер</h2>
-            <p class="modal-role">Инженер</p>
-            
-            <div class="modal-section">
-                <h3>Возраст</h3>
-                <p>28 лет</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Раса</h3>
-                <p>Человек</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Пол</h3>
-                <p>Мужской</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Сама квента</h3>
-                <p>тут квента</p>
-            </div>
-        </div>
-    </div>
+    <!-- Audio element for startup sound -->
+    <audio id="startup-sound" preload="auto">
+        <source src="startup.mp3" type="audio/mpeg">
+        <source src="startup.wav" type="audio/wav">
+        <source src="startup.ogg" type="audio/ogg">
+    </audio>
 
-    <div class="modal" id="modal-maria">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-avatar">
-                <img src="https://via.placeholder.com/120x120/ff6600/000000?text=MP" alt="Мария Родригес">
-            </div>
-            <h2 class="modal-name">Мария Родригес</h2>
-            <p class="modal-role">Медик</p>
-            
-            <div class="modal-section">
-                <h3>Возраст</h3>
-                <p>35 лет</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Раса</h3>
-                <p>Человек</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Пол</h3>
-                <p>Женский</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Сама квента</h3>
-                <p>тут квента</p>
-            </div>
-        </div>
-    </div>
+    <!-- CRT Effects -->
+    <div class="crt-frame"></div>
+    <div class="screen-flicker" id="screenFlicker"></div>
+    <div class="scanlines" id="scanlines"></div>
 
-    <div class="modal" id="modal-viktor">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-avatar">
-                <img src="https://via.placeholder.com/120x120/ff0000/000000?text=VN" alt="Виктор Новак">
+    <!-- SVG Filter for CRT distortion -->
+    <svg class="crt-distortion">
+        <defs>
+            <filter id="crt-distortion" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence baseFrequency="0.01 0.08" numOctaves="2" seed="2" stitchTiles="stitch"/>
+                <feDisplacementMap in="SourceGraphic" scale="5"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="crt-content" id="crtContent">
+        <div class="container">
+            <div class="header">
+                <h1 class="main-title buzz-text glitch" id="mainTitle" data-text="АРХИВ">АРХИВ</h1>
+                <p class="subtitle buzz-text" data-text="NANOTRASEN"NANOTRASEN</p>
+                <p class="welcome-text">Добро пожаловать</p>
+                <p class="info-text">Вы получили доступ к части архива сотрудников корпорации NanoTrasen.</p>
             </div>
-            <h2 class="modal-name">Виктор Новак</h2>
-            <p class="modal-role">Безопасность</p>
-            
-            <div class="modal-section">
-                <h3>Возраст</h3>
-                <p>41 год</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Раса</h3>
-                <p>Человек</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Пол</h3>
-                <p>Мужской</p>
-            </div>
-            
-            <div class="modal-section">
-                <h3>Сама квента</h3>
-                <p>тут квента</p>
+
+            <div class="characters-grid">
+                <div class="character-card" data-url="characters/richard-barkly.html" data-bg="bg-richard">
+                    <div class="character-avatar">
+                        <img src="images/ocs/richard-barkli.png" alt="Ричард Баркли" onerror="this.style.display='none'; this.parentNode.innerHTML='JB';">
+                    </div>
+                    <div class="character-info">
+                        <div class="character-name buzz-text" data-text="Ричард Баркли">Ричард Баркли</div>
+                        <div class="character-role">Учёный</div>
+                        <div class="character-description">тут квента</div>
+                    </div>
+                </div>
+
+                <div class="character-card" data-url="" data-bg="bg-error">
+                    <div class="character-avatar">
+                        <img src="images/tech/NT1.png" alt="ERROR" onerror="this.style.display='none'; this.parentNode.innerHTML='NT';">
+                    </div>
+                    <div class="character-info">
+                        <div class="character-name buzz-text" data-text="????">ERROR</div>
+                        <div class="character-role">Неизвестно</div>
+                        <div class="character-description">Ошибка</div>
+                    </div>
+                </div>
+
+                <div class="character-card" data-url="" data-bg="bg-error">
+                    <div class="character-avatar">
+                        <img src="images/tech/NT1.png" alt="ERROR" onerror="this.style.display='none'; this.parentNode.innerHTML='NT';">
+                    </div>
+                    <div class="character-info">
+                        <div class="character-name buzz-text" data-text="????">ERROR</div>
+                        <div class="character-role">Неизвестно</div>
+                        <div class="character-description">Ошибка</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Получаем все карточки персонажей
-        const characterCards = document.querySelectorAll('.character-card');
-        const modals = document.querySelectorAll('.modal');
-        const closeBtns = document.querySelectorAll('.close-btn');
+        // Audio context for startup sound
+        let audioInitialized = false;
+        const startupSound = document.getElementById('startup-sound');
+        const clickToStart = document.getElementById('clickToStart');
+        const startupOverlay = document.getElementById('startupOverlay');
+        const crtContent = document.getElementById('crtContent');
+        const screenFlicker = document.getElementById('screenFlicker');
+        const scanlines = document.getElementById('scanlines');
+        const mainTitle = document.getElementById('mainTitle');
 
-        // Добавляем обработчики событий для карточек
-        characterCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const character = card.dataset.character;
-                const modal = document.getElementById(`modal-${character}`);
-                modal.classList.add('active');
-                
-                // Добавляем звуковой эффект (опционально)
-                playClickSound();
-            });
-        });
+        // Initialize the startup sequence
+        function initializeStartup() {
+            if (audioInitialized) return;
+            audioInitialized = true;
 
-        // Добавляем обработчики для кнопок закрытия
-        closeBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const modal = btn.closest('.modal');
-                modal.classList.remove('active');
-            });
-        });
+            // Hide click to start overlay
+            clickToStart.classList.add('hidden');
 
-        // Закрытие модального окна по клику на фон
-        modals.forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                }
-            });
-        });
-
-        // Закрытие модального окна по нажатию Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                modals.forEach(modal => {
-                    modal.classList.remove('active');
-                });
+            // Play startup sound
+            if (startupSound.canPlayType && startupSound.canPlayType('audio/mpeg') !== '') {
+                startupSound.play().catch(e => console.log('Audio playback failed:', e));
             }
-        });
 
-        // Звуковой эффект (опционально)
-        function playClickSound() {
-            // Создаем простой звуковой эффект
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'square';
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
+            // Start CRT turn-on animation
+            setTimeout(() => {
+                crtContent.classList.add('turning-on');
+                
+                // Show startup overlay with flickering
+                setTimeout(() => {
+                    startupOverlay.classList.add('hidden');
+                    screenFlicker.classList.add('active');
+                    scanlines.classList.add('active');
+                    
+                    // Add CRT distortion filter
+                    crtContent.style.filter = 'url(#crt-distortion)';
+                    
+                    // Start typewriter effect for title
+                    setTimeout(() => {
+                        typeWriter(mainTitle, 'АРХИВ');
+                    }, 500);
+                }, 2500);
+            }, 100);
         }
 
-        // Добавляем эффект печатной машинки для заголовка
-        function typeWriter(element, text, speed = 50) {
+        // Event listeners for startup
+        clickToStart.addEventListener('click', initializeStartup);
+        document.addEventListener('keydown', initializeStartup);
+
+        // Typewriter effect
+        function typeWriter(element, text, speed = 100) {
             let i = 0;
             element.innerHTML = '';
+            element.classList.remove('glitch');
             
             function type() {
                 if (i < text.length) {
                     element.innerHTML += text.charAt(i);
+                    element.setAttribute('data-text', element.innerHTML);
                     i++;
                     setTimeout(type, speed);
+                } else {
+                    element.classList.add('glitch');
                 }
             }
             
             type();
         }
 
-        // Запускаем эффект печатной машинки при загрузке
-        window.addEventListener('load', () => {
-            const title = document.querySelector('.main-title');
-            const originalText = title.textContent;
-            typeWriter(title, originalText);
-        });
+        // Character card hover effects for background zoom
+        function initializeBackgroundEffects() {
+            const characterCards = document.querySelectorAll('.character-card');
+            const backgroundImages = document.querySelectorAll('.background-image');
 
-        // Добавляем эффект мерцания для элементов
-        function addGlitchEffect() {
-            const elements = document.querySelectorAll('.character-card, .modal-content');
-            elements.forEach(element => {
-                element.addEventListener('mouseenter', () => {
-                    element.style.animation = 'glitch 0.3s ease-in-out';
+            characterCards.forEach(card => {
+                const bgId = card.getAttribute('data-bg');
+                const backgroundElement = document.getElementById(bgId);
+
+                card.addEventListener('mouseenter', () => {
+                    // Hide all backgrounds first
+                    backgroundImages.forEach(bg => bg.classList.remove('active'));
+                    
+                    // Show the corresponding background
+                    if (backgroundElement) {
+                        backgroundElement.classList.add('active');
+                    }
                 });
-                
-                element.addEventListener('animationend', () => {
-                    element.style.animation = '';
+
+                card.addEventListener('mouseleave', () => {
+                    // Hide the background
+                    if (backgroundElement) {
+                        backgroundElement.classList.remove('active');
+                    }
                 });
             });
         }
 
-        addGlitchEffect();
+        // Character card click handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            const characterCards = document.querySelectorAll('.character-card');
+            
+            // Initialize background effects
+            initializeBackgroundEffects();
+            
+            characterCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const url = card.dataset.url;
+                    if (url) {
+                        // Add glitch effect before redirect
+                        card.style.animation = 'glitch 0.2s ease-in-out';
+                        
+                        // Play click sound
+                        playClickSound();
+                        
+                        // Redirect after short delay
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 200);
+                    }
+                });
+            });
+        });
+
+        // Sound effect for clicks
+        function playClickSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'square';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Audio context not available:', e);
+            }
+        }
+
+        // Glitch effect on hover
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.animation = 'glitch 0.1s ease-in-out';
+            });
+            
+            card.addEventListener('animationend', () => {
+                if (!card.matches(':hover')) {
+                    card.style.animation = '';
+                }
+            });
+        });
+
+        // Random screen glitches
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance every interval
+                document.body.style.animation = 'glitch 0.1s ease-in-out';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 100);
+            }
+        }, 3000);
+
+        // Prevent right-click context menu for immersion
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Enhanced buzz effect for specific elements
+        function addBuzzEffect(element) {
+            element.addEventListener('mouseenter', () => {
+                element.style.filter = 'blur(0.3px) brightness(120%)';
+                element.style.textShadow = '0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00';
+            });
+
+            element.addEventListener('mouseleave', () => {
+                element.style.filter = '';
+                element.style.textShadow = '';
+            });
+        }
+
+        // Apply buzz effect to buzz-text elements after DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.buzz-text').forEach(addBuzzEffect);
+        });
     </script>
 </body>
 </html>
