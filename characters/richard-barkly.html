@@ -398,6 +398,64 @@
             box-shadow: 0 0 10px rgba(0, 204, 204, 0.5);
         }
 
+        .work-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .work-overlay.show {
+            display: flex;
+        }
+
+        .work-window {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(34, 34, 34, 0.95));
+            border: 3px solid #00cccc;
+            padding: 30px;
+            max-width: 1920px;
+            width: 90%;
+            max-height: 1080px;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 204, 204, 0.5);
+            animation: glitchIn 0.5s ease-out;
+            text-align: center;
+        }
+
+        .work-img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border: 2px solid #00cccc;
+            box-shadow: 0 0 20px rgba(0, 204, 204, 0.3);
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .work-window .close-btn {
+            background: #00cccc;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.7rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .work-window .close-btn:hover {
+            background: #66ffff;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 204, 204, 0.5);
+        }
+
         @keyframes glitchIn {
             0% {
                 transform: scale(0.8) translate(-20px, 20px);
@@ -518,7 +576,21 @@
         <source src="../sounds/ambient.ogg" type="audio/ogg">
         <source src="../sounds/ambient.wav" type="audio/wav">
         <!-- Добавьте путь к вашему звуковому файлу -->
+
+    <!-- Звук для кнопки "Расширенный доступ" -->
+    <audio id="secretSound" preload="auto">
+        <source src="../sounds/button-click.mp3" type="audio/mpeg">
+        <source src="../sounds/button-click.ogg" type="audio/ogg">
+        <source src="../sounds/button-click.wav" type="audio/wav">
     </audio>
+
+    <!-- Звук для ссылки "Земной государственный университет" -->
+    <audio id="universitySound" preload="auto">
+        <source src="../sounds/button-click.mp3" type="audio/mpeg">
+        <source src="../sounds/button-click.ogg" type="audio/ogg">
+        <source src="../sounds/button-click.wav" type="audio/wav">
+    </audio>
+        </audio>
 
     <div class="container">
         <div class="header">
@@ -570,7 +642,7 @@
             <div class="description">
                 <h3>БИОГРАФИЯ</h3>
                 <p>Ричард Баркли родился в семье среднего класса в городе Дефорд на планете и одноименной системе Helion (далее Гелион), принадлежащей Объединённому Правительству Земли. До поступления в <span class="clickable-link" onclick="showUniversityImage()">Земной государственный университет</span> имел проблемы с социализацией, однако практически полное отсутствие общения со сверстниками помогло Ричарду более глубже окунуться в мир, полный научных журналов, книг и рассказов. </p>
-                <p></p>
+                <p>После обучения в Земном Государственном Университете, затраты которого покрыло NanoTrasen, до бакалавриата в области естественных наук, в возрасте 22 лет Ричард Баркли был <span class="clickable-link" onclick="showWorkImage()">нанят младшим научным сотрудником NanoTrasen</span> и зачислен в категорию сотрудников уровня B.  </p>
                 <p></p>
             </div>
         </div>
@@ -602,6 +674,14 @@
         <div class="university-window">
             <img src="../images/ocs/docs/Richard/университет.png" alt="Земной государственный университет" class="university-img">
             <button class="close-btn" onclick="hideUniversityImage()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Work Paper -->
+    <div class="work-overlay" id="WorkOverlay">
+        <div class="work-window">
+            <img src="../images/ocs/docs/Richard/волокита.png" alt="Бумажная волокита" class="work-img">
+            <button class="close-btn" onclick="hideWorkImage()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -655,7 +735,7 @@
 
         function showSecret() {
             document.getElementById('secretOverlay').classList.add('show');
-            playGlitchSound();
+            playSecretSound();
         }
 
         function hideSecret() {
@@ -666,6 +746,13 @@
             if (e.key === 'Escape') {
                 hideSecret();
                 hideUniversityImage();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideSecret();
+                hideWorkImage();
             }
         });
 
@@ -684,34 +771,45 @@
 
         function showUniversityImage() {
             document.getElementById('universityOverlay').classList.add('show');
-            playGlitchSound();
+            playUniversitySound();
+        }
+
+        document.getElementById('WorkOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'WorkOverlay') {
+            hideWorkImage();
+            }
+        });
+
+        function showWorkImage() {
+            document.getElementById('WorkOverlay').classList.add('show');
+            playUniversitySound();
+        }
+
+        // Новые функции для воспроизведения звуков
+        function playSecretSound() {
+            if (audioEnabled) {
+                const secretAudio = document.getElementById('secretSound');
+                secretAudio.volume = 0.7; // Настройте громкость
+                secretAudio.currentTime = 0; // Начать с начала
+                secretAudio.play().catch(e => console.log('Secret sound error:', e));
+            }
+        }
+
+        function playUniversitySound() {
+            if (audioEnabled) {
+                const universityAudio = document.getElementById('universitySound');
+                universityAudio.volume = 0.7; // Настройте громкость
+                universityAudio.currentTime = 0; // Начать с начала
+                universityAudio.play().catch(e => console.log('University sound error:', e));
+            }
         }
 
         function hideUniversityImage() {
             document.getElementById('universityOverlay').classList.remove('show');
         }
 
-        // Sound effect for secret access
-        function playGlitchSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 220;
-                oscillator.type = 'sawtooth';
-                
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            } catch (e) {
-                console.log('Audio context not available:', e);
-            }
+        function hideWorkImage() {
+            document.getElementById('WorkOverlay').classList.remove('show');
         }
 
         // Random screen glitches (только когда эффекты включены)
