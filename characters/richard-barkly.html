@@ -79,9 +79,9 @@
             height: 200%;
             pointer-events: none;
             z-index: 997;
-            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.30) 50%);
-            background-size: 100% 8px;
-            animation: scanlines 0.40s linear infinite;
+            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.08) 50%);
+            background-size: 100% 12px;
+            animation: scanlines 0.60s linear infinite;
             transition: opacity 0.3s ease;
         }
 
@@ -456,6 +456,132 @@
             box-shadow: 0 0 10px rgba(0, 204, 204, 0.5);
         }
 
+        .image-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-overlay.show {
+            display: flex;
+        }
+
+        .image-window {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(34, 34, 34, 0.95));
+            border: 3px solid #00cccc;
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden; /* Изменено с auto на hidden */
+            box-shadow: 0 0 50px rgba(0, 204, 204, 0.5);
+            animation: glitchIn 0.5s ease-out;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-window img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border: 2px solid #00cccc;
+            box-shadow: 0 0 20px rgba(0, 204, 204, 0.3);
+            filter: brightness(0.9) contrast(1.1);
+            display: block;
+            margin: 0 auto;
+            cursor: grab;
+            transition: transform 0.1s ease;
+            transform-origin: center center;
+            object-fit: contain; /* Сохранить пропорции */
+        }
+
+        .image-container {
+            width: 100%;
+            height: calc(80vh - 120px);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }  
+
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+        .zoom-btn {
+            background: rgba(0, 255, 0, 0.8);
+            border: 1px solid #00ff00;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(0, 255, 0, 1);
+            transform: scale(1.1);
+            }
+
+        .zoom-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 5px 10px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.5rem;
+            border: 1px solid #00ff00;
+        }
+
+        .image-window img:active {
+            cursor: grabbing;
+        }
+
+        .image-window img.zoomed {
+            cursor: move;
+        }
+
+        .image-window .close-btn {
+            background: #00cccc;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            font-family: "Press Start 2P", system-ui;
+            font-size: 0.7rem;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="%2300ff00"/></svg>'), pointer !important;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .image-window .close-btn:hover {
+            background: #66ffff;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 204, 204, 0.5);
+        }
+
         @keyframes glitchIn {
             0% {
                 transform: scale(0.8) translate(-20px, 20px);
@@ -512,6 +638,102 @@
             color: #ff0000;
             font-weight: bold;
             animation: blink 1.5s infinite;
+        }
+
+        .media-controls-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .recorder-container {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+            width: 280px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .recorder-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: brightness(0.8);
+            margin-bottom: 15px;
+        }
+
+        .recorder-btn:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+
+        .recorder-btn img {
+            width: 120px;
+            height: auto;
+            image-rendering: pixelated;
+        }
+
+        .recorder-status, .button-description {
+            color: #00ff00;
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .media-btn {
+            padding: 20px 15px !important;
+            font-size: 0.7rem !important;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            width: 200px;
+        }
+
+        .special-btn {
+            border-color: #ffff00 !important;
+            color: #ffff00 !important;
+        }
+
+        .special-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.1), rgba(255, 204, 0, 0.1)) !important;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.3) !important;
+        }
+
+        .button-description {
+            color: #ffff00;
+            font-size: 0.7rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .media-controls-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+    
+            .recorder-container {
+            width: 250px;
+            }
+    
+            .media-btn {
+                width: 180px;
+                padding: 15px 10px !important;
+                font-size: 0.6rem !important;
+                min-height: 100px;
+            }
         }
 
         @keyframes blink {
@@ -579,9 +801,16 @@
 
     <!-- Звук для кнопки "Расширенный доступ" -->
     <audio id="secretSound" preload="auto">
-        <source src="../sounds/button-click.mp3" type="audio/mpeg">
-        <source src="../sounds/button-click.ogg" type="audio/ogg">
-        <source src="../sounds/button-click.wav" type="audio/wav">
+        <source src="../sounds/одобрено.mp3" type="audio/mpeg">
+        <source src="../sounds/одобрено.ogg" type="audio/ogg">
+        <source src="../sounds/одобрено.wav" type="audio/wav">
+    </audio>
+
+    <!-- Звук "Одобрено" -->
+    <audio id="secretSound" preload="auto">
+        <source src="../sounds/одобрено.mp3" type="audio/mpeg">
+        <source src="../sounds/одобрено..ogg" type="audio/ogg">
+        <source src="../sounds/одобрено..wav" type="audio/wav">
     </audio>
 
     <!-- Звук для ссылки "Земной государственный университет" -->
@@ -591,6 +820,13 @@
         <source src="../sounds/button-click.wav" type="audio/wav">
     </audio>
         </audio>
+
+    <!-- Запись диктофона в бриге -->
+    <audio id="recorderAudio" preload="auto">
+        <source src="../sounds/recorded-message.mp3" type="audio/mpeg">
+        <source src="../sounds/recorded-message.ogg" type="audio/ogg">
+        <source src="../sounds/recorded-message.wav" type="audio/wav">
+    </audio>
 
     <div class="container">
         <div class="header">
@@ -643,9 +879,32 @@
                 <h3>БИОГРАФИЯ</h3>
                 <p>Ричард Баркли родился в семье среднего класса в городе Дефорд на планете и одноименной системе Helion (далее Гелион), принадлежащей Объединённому Правительству Земли. До поступления в <span class="clickable-link" onclick="showUniversityImage()">Земной государственный университет</span> имел проблемы с социализацией, однако практически полное отсутствие общения со сверстниками помогло Ричарду более глубже окунуться в мир, полный научных журналов, книг и рассказов. </p>
                 <p>После обучения в Земном Государственном Университете, затраты которого покрыло NanoTrasen, до бакалавриата в области естественных наук, в возрасте 22 лет Ричард Баркли был <span class="clickable-link" onclick="showWorkImage()">нанят младшим научным сотрудником NanoTrasen</span> и зачислен в категорию сотрудников уровня B.  </p>
-                <p></p>
+                <p>9 октября 2826 года Ричард Баркли был <span class="clickable-link" onclick="showImage('../images/ocs/docs/Richard/задержан.png')">задержан</span> сотрудниками службы безопасности из-за найденных красноватых кристаллов в его сумке.</p>
+                <p>В ходе допроса Ричард Баркли был признан невиновным и его отпустили, изъяв кристаллы, однако за сотрудником была назначена слежка, которая прекратилась только спустя полгода. Сохранилась стенограмма, по которой, с помощью ИИ и имеющихся образцов голоса, была создана аудио-плёнка:</p>
+        <div class="media-controls-container">
+            <div class="recorder-container">
+                <button class="recorder-btn" id="recorderBtn" onclick="toggleRecorder()">
+                    <img id="recorderImg" src="../images/tech/recorder-stop.png" alt="Диктофон">
+                </button>
+                <div id="recorderStatus">ВОССТАНОВЛЕННАЯ ИИ ЗАПИСЬ С ДОПРОСНОЙ</div>
+            </div>
+    
+            <div class="recorder-container">
+                <button class="secret-btn special-btn media-btn" onclick="showSpecialImage()">СПЕЦИАЛЬНЫЙ ДОСТУП</button>
+                <div class="button-description">ДОСКА СВЯЗИ ДЕТЕКТИВА Е.В</div>
             </div>
         </div>
+            <h4 style="text-align: center;">Аудио Транскрипция</h4>
+            <p><span style="color: red;">Детектив Е.В:</span> Добрый день.. Вам известно, почему вы здесь, в бриге?</p>
+            <p><span style="color: purple;">Ассистент Р.Б:</span> За те... минералы, в-верно?..</p>
+            <p><span style="color: red;">Детектив Е.В:</span> Да.. Скажите, что они делали у вас в сумке?</p>
+            <p><span style="color: purple;">Ассистент Р.Б:</span> После нахождения той комнаты, помните, что в технических туннелях.. с синдикатом..вроде.. я нашел кристаллы. Думал на экспертизу отправлю, а потом сразу в бриг! Экспертизу я провёл, все данные в свой КПК записал... а когда хотел отнести в бриг, то меня остановили с целью обыска.. Сами спросите у того падонка-офицера, который даже слушать меня не хотел!</p>
+            <p><span style="color: red;">Детектив Е.В:</span> Спокойно, Ричард. Помните, что разговор записывается. </p>
+            <p><span style="color: purple;">Ассистент Р.Б:</span>  А...да...точно...точно..</p>
+            <p><span style="color: red;">Детектив Е.В:</span> Итак.. я просмотрела детальнее то, что случилось вчера и ваши действия в последнее время мне кажутся немного.. мгм.. подозрительными? Да, в точку. Тем не менее, кристаллы, по всей видимости, ничего из себя не представляют. Не против, если мы их заберем на <span class="clickable-link" onclick="showImage('../images/ocs/docs/Richard/минераловедение-old2.png')">экспертизу</span>, а КПК проверим на наличие подозрительных заметок или сохраненных номеров. </p>
+            <p><span style="color: purple;">Ассистент Р.Б:</span>  Конечно!.. Да.. давайте..</p>      
+            <p>15 августа 2830 года, в возрасте 28 лет, Ричард Баркли, успешно сдав <span class="clickable-link" onclick="showImage('../images/ocs/docs/Richard/тесты.png')">тесты</span>, был повышен до должности аномалиста. Согласно отчётам Научных Руководителей, Ричард Баркли испытывал особый интерес к гравитационным аномалиям, а качество его работы было выше среднего: ни одна аномалия за весь срок работы не была взорвана. </p>
+            </div>
 
         <div>
             <a href="../index.html" class="back-btn">← НАЗАД К АРХИВУ</a>
@@ -682,6 +941,22 @@
         <div class="work-window">
             <img src="../images/ocs/docs/Richard/волокита.png" alt="Бумажная волокита" class="work-img">
             <button class="close-btn" onclick="hideWorkImage()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Universal Image Overlay -->
+    <div class="image-overlay" id="imageOverlay">
+        <div class="image-window" id="imageWindow">
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomIn()">+</button>
+                <button class="zoom-btn" onclick="zoomOut()">-</button>
+                <button class="zoom-btn" onclick="resetZoom()">⌂</button>
+            </div>
+            <div class="zoom-info" id="zoomInfo">100%</div>
+            <div class="image-container" id="imageContainer">
+                <img id="overlayImage" src="" alt="">
+            </div>
+            <button class="close-btn" onclick="hideImage()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -746,6 +1021,7 @@
             if (e.key === 'Escape') {
                 hideSecret();
                 hideUniversityImage();
+                hideImage();
             }
         });
 
@@ -795,6 +1071,15 @@
             }
         }
 
+        function playApprovedSound() {
+            if (audioEnabled) {
+                const universityAudio = document.getElementById('approveSound');
+                approveAudio.volume = 0.7; // Настройте громкость
+                approveAudio.currentTime = 0; // Начать с начала
+                approveAudio.play().catch(e => console.log('approve sound error:', e));
+            }
+        }
+
         function playUniversitySound() {
             if (audioEnabled) {
                 const universityAudio = document.getElementById('universitySound');
@@ -811,6 +1096,114 @@
         function hideWorkImage() {
             document.getElementById('WorkOverlay').classList.remove('show');
         }
+
+        let currentZoom = 1;
+        let isDragging = false;
+        let startX, startY, translateX = 0, translateY = 0;
+
+        function showImage(imagePath) {
+            const img = document.getElementById('overlayImage');
+    
+            img.onerror = function() {
+                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23333"/><text x="200" y="150" text-anchor="middle" fill="%23ff0000" font-family="monospace" font-size="16">ОШИБКА ЗАГРУЗКИ</text></svg>';
+            };
+    
+            img.src = imagePath;
+            document.getElementById('imageOverlay').classList.add('show');
+            resetZoom();
+            setupDragHandlers();
+            playUniversitySound();
+        }
+
+        function hideImage() {
+            document.getElementById('imageOverlay').classList.remove('show');
+            resetZoom();
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom * 1.5, 5);
+            updateImageTransform();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom / 1.5, 0.5);
+            updateImageTransform();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            translateX = 0;
+            translateY = 0;
+            updateImageTransform();
+        }
+
+        function updateImageTransform() {
+            const img = document.getElementById('overlayImage');
+            img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+            document.getElementById('zoomInfo').textContent = Math.round(currentZoom * 100) + '%';
+        }
+
+        function setupDragHandlers() {
+            const img = document.getElementById('overlayImage');
+            const imageWindow = document.getElementById('imageWindow');
+    
+            // Удалить старые обработчики если есть
+            img.onmousedown = null;
+    
+            img.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                e.preventDefault();
+                img.style.cursor = 'grabbing';
+            });
+    
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging && currentZoom > 1) {
+                    translateX = e.clientX - startX;
+                    translateY = e.clientY - startY;
+                    updateImageTransform();
+                }
+            });
+    
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    img.style.cursor = 'grab';
+                }
+            });
+    
+            // Масштабирование колесиком
+            imageWindow.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                const rect = img.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+        
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            });
+        }
+
+        function hideImage() {
+            document.getElementById('imageOverlay').classList.remove('show');
+        }
+
+        function showSpecialImage() {
+            // Замените путь на нужное вам изображение
+            showImage('../images/ocs/docs/Richard/detective-full.png');
+            playApprovedSound();
+        }
+
+        // Добавить обработчик клика по overlay
+        document.getElementById('imageOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'imageOverlay') {
+                hideImage();
+            }
+        });
 
         // Random screen glitches (только когда эффекты включены)
         setInterval(() => {
@@ -843,6 +1236,51 @@
                 audio.play().catch(e => console.log('Autoplay prevented:', e));
             }
         }, { once: true });
+
+        let recorderPlaying = false;
+        const recorderAudio = document.getElementById('recorderAudio');
+        const recorderImg = document.getElementById('recorderImg');
+        const recorderStatus = document.getElementById('recorderStatus');
+
+        function toggleRecorder() {
+            if (recorderPlaying) {
+                // Остановить воспроизведение
+                recorderAudio.pause();
+                recorderAudio.currentTime = 0;
+                recorderImg.src = '../images/tech/recorder-stop.png';
+                recorderStatus.textContent = 'ОСТАНОВЛЕН';
+                recorderStatus.style.color = '#00ff00';
+                recorderPlaying = false;
+            } else {
+                // Начать воспроизведение (только если звук включен)
+                if (audioEnabled) {
+                    recorderAudio.play().then(() => {
+                        recorderImg.src = '../images/tech/recorder-play.png';
+                        recorderStatus.textContent = 'ВОСПРОИЗВОДИТСЯ..';
+                        recorderStatus.style.color = '#ff6600';
+                        recorderPlaying = true;
+                    }).catch(e => {
+                        console.log('Recorder audio error:', e);
+                        alert('Не удалось воспроизвести запись');
+                    });
+                } else {
+                    alert('Включите звук для воспроизведения записи');
+                }
+            }
+        }
+
+        // Автоматически остановить при окончании аудио
+        recorderAudio.addEventListener('ended', () => {
+            recorderImg.src = '../images/tech/recorder-stop.png';
+            recorderStatus.textContent = 'ЗАПИСЬ ЗАВЕРШЕНА';
+            recorderStatus.style.color = '#00cccc';
+            recorderPlaying = false;
+    
+            setTimeout(() => {
+                recorderStatus.textContent = 'ОСТАНОВЛЕН';
+                recorderStatus.style.color = '#00ff00';
+            }, 2000);
+        });
     </script>
 </body>
 </html>
