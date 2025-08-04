@@ -984,7 +984,6 @@
         <source src="../sounds/ambient.mp3" type="audio/mpeg">
         <source src="../sounds/ambient.ogg" type="audio/ogg">
         <source src="../sounds/ambient.wav" type="audio/wav">
-        <!-- Добавьте путь к вашему звуковому файлу -->
 
     <!-- Звук для кнопки "Расширенный доступ" -->
     <audio id="secretSound" preload="auto">
@@ -1000,14 +999,13 @@
         <source src="../sounds/одобрено..wav" type="audio/wav">
     </audio>
 
-    <!-- Звук признания Баркли -->
+    <!-- Звук признания -->
     <audio id="confessionAudio" preload="auto">
         <source src="../sounds/confession-message.mp3" type="audio/mpeg">
         <source src="../sounds/confession-message.ogg" type="audio/ogg">
         <source src="../sounds/confession-message.wav" type="audio/wav">
     </audio>
 
-    <!-- Звук для ссылки "Земной государственный университет" -->
     <audio id="universitySound" preload="auto">
         <source src="../sounds/button-click.mp3" type="audio/mpeg">
         <source src="../sounds/button-click.ogg" type="audio/ogg">
@@ -1212,9 +1210,8 @@
         let effectsEnabled = true;
         const audio = document.getElementById('backgroundAudio');
         
-        // Initialize audio
         function initAudio() {
-            audio.volume = 0.5; // Установить громкость 30%
+            audio.volume = 0.5;
         }
 
         function toggleAudio() {
@@ -1226,7 +1223,6 @@
                 btn.textContent = '🔇 ЗВУК: ВЫКЛ';
                 btn.classList.remove('active');
             } else {
-                // Попытка воспроизведения с обработкой ошибок
                 audio.play().then(() => {
                     audioEnabled = true;
                     btn.textContent = '🔊 ЗВУК: ВКЛ';
@@ -1308,12 +1304,11 @@
             playUniversitySound();
         }
 
-        // Новые функции для воспроизведения звуков
         function playSecretSound() {
             if (audioEnabled) {
                 const secretAudio = document.getElementById('secretSound');
-                secretAudio.volume = 0.7; // Настройте громкость
-                secretAudio.currentTime = 0; // Начать с начала
+                secretAudio.volume = 0.7;
+                secretAudio.currentTime = 0;
                 secretAudio.play().catch(e => console.log('Secret sound error:', e));
             }
         }
@@ -1321,8 +1316,8 @@
         function playApprovedSound() {
             if (audioEnabled) {
                 const universityAudio = document.getElementById('approveSound');
-                approveAudio.volume = 0.7; // Настройте громкость
-                approveAudio.currentTime = 0; // Начать с начала
+                approveAudio.volume = 0.7;
+                approveAudio.currentTime = 0; 
                 approveAudio.play().catch(e => console.log('approve sound error:', e));
             }
         }
@@ -1330,8 +1325,8 @@
         function playUniversitySound() {
             if (audioEnabled) {
                 const universityAudio = document.getElementById('universitySound');
-                universityAudio.volume = 0.7; // Настройте громкость
-                universityAudio.currentTime = 0; // Начать с начала
+                universityAudio.volume = 0.7;
+                universityAudio.currentTime = 0;
                 universityAudio.play().catch(e => console.log('University sound error:', e));
             }
         }
@@ -1394,7 +1389,6 @@
             const img = document.getElementById('overlayImage');
             const imageWindow = document.getElementById('imageWindow');
     
-            // Удалить старые обработчики если есть
             img.onmousedown = null;
     
             img.addEventListener('mousedown', function(e) {
@@ -1440,19 +1434,16 @@
         }
 
         function showSpecialImage() {
-            // Замените путь на нужное вам изображение
             showImage('../images/ocs/docs/Richard/detective-full.png');
             playApprovedSound();
         }
 
-        // Добавить обработчик клика по overlay
         document.getElementById('imageOverlay').addEventListener('click', (e) => {
             if (e.target.id === 'imageOverlay') {
                 hideImage();
             }
         });
 
-        // Random screen glitches (только когда эффекты включены)
         setInterval(() => {
             if (effectsEnabled && Math.random() < 0.05) {
                 document.body.style.animation = 'glitch 0.1s ease-in-out';
@@ -1462,22 +1453,17 @@
             }
         }, 5000);
 
-        // Initialize on load
         window.addEventListener('load', () => {
             initAudio();
-            // Установить начальное состояние кнопок
             document.getElementById('effectsBtn').classList.add('active');
         });
 
-        // Prevent right-click for immersion
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        // Handle audio loading errors
         audio.addEventListener('error', () => {
             console.log('Ошибка загрузки аудио файла');
         });
 
-        // Autoplay policy handling
         document.addEventListener('click', () => {
             if (audioEnabled && audio.paused) {
                 audio.play().catch(e => console.log('Autoplay prevented:', e));
@@ -1491,7 +1477,6 @@
 
         function toggleRecorder() {
             if (recorderPlaying) {
-                // Остановить воспроизведение
                 recorderAudio.pause();
                 recorderAudio.currentTime = 0;
                 recorderImg.src = '../images/tech/recorder-stop.png';
@@ -1499,7 +1484,6 @@
                 recorderStatus.style.color = '#00ff00';
                 recorderPlaying = false;
             } else {
-                // Начать воспроизведение (только если звук включен)
                 if (audioEnabled) {
                     recorderAudio.play().then(() => {
                         recorderImg.src = '../images/tech/recorder-play.png';
@@ -1516,7 +1500,6 @@
             }
         }
 
-        // Автоматически остановить при окончании аудио
         recorderAudio.addEventListener('ended', () => {
             recorderImg.src = '../images/tech/recorder-stop.png';
             recorderStatus.textContent = 'ЗАПИСЬ ЗАВЕРШЕНА';
@@ -1529,7 +1512,6 @@
             }, 2000);
         });
 
-        // Confession recorder functionality
         let confessionRecorderPlaying = false;
         const confessionAudio = document.getElementById('confessionAudio');
         const confessionRecorderImg = document.getElementById('confessionRecorderImg');
@@ -1537,7 +1519,6 @@
 
         function toggleConfessionRecorder() {
             if (confessionRecorderPlaying) {
-                // Остановить воспроизведение
                 confessionAudio.pause();
                 confessionAudio.currentTime = 0;
                 confessionRecorderImg.src = '../images/tech/recorder-stop.png';
@@ -1545,7 +1526,6 @@
                 confessionRecorderStatus.style.color = '#0066cc';
                 confessionRecorderPlaying = false;
             } else {
-                // Начать воспроизведение (только если звук включен)
                 if (audioEnabled) {
                     confessionAudio.play().then(() => {
                         confessionRecorderImg.src = '../images/tech/recorder-play.png';
@@ -1562,7 +1542,6 @@
             }
         }
 
-        // Автоматически остановить при окончании аудио
         confessionAudio.addEventListener('ended', () => {
             confessionRecorderImg.src = '../images/tech/recorder-stop.png';
             confessionRecorderStatus.textContent = 'ЗАПИСЬ ЗАВЕРШЕНА';
@@ -1575,7 +1554,6 @@
             }, 2000);
         });
 
-        // Archive edit functionality
         function approveEdit() {
             showStatusMessage('ПРАВКА ОДОБРЕНА И ДОБАВЛЕНА В АРХИВ', 'approved');
             document.getElementById('archiveEdit').style.display = 'none';
@@ -1600,7 +1578,6 @@
             statusDiv.className = `status-message status-${type}`;
             statusDiv.style.display = 'block';
     
-            // Прокрутить к сообщению
             statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
@@ -1615,7 +1592,6 @@
 
         function playDeclineSound() {
             if (audioEnabled) {
-                // Можно использовать другой звук для отклонения
                 const universityAudio = document.getElementById('universitySound');
                 universityAudio.volume = 0.6;
                 universityAudio.currentTime = 0;
@@ -1623,14 +1599,12 @@
             }
         }       
 
-        // Добавить Escape для закрытия статуса
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const statusMessage = document.getElementById('statusMessage');
                 if (statusMessage.style.display !== 'none') {
                     statusMessage.style.display = 'none';
                 }
-                // ... остальные обработчики Escape
             }
         });
 
